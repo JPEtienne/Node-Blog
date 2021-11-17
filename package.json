@@ -1,5 +1,13 @@
 {
   "devDependencies": {
     "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "lodash": "^4.17.21",
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "start": "nodemon back/server"
   }
 }
