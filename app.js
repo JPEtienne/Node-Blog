@@ -1,16 +1,26 @@
 const express = require('express')
-const { join } = require('path')
+const morgan = require('morgan')
+const dotenv = require('dotenv')
 
 // express app
 const app = express()
 
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
+
+// connect to mongodb
+const dbURI = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@node-blog.qektg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+
 // register view engine
 app.set('view engine', 'ejs')
 
-app.use(express.static(__dirname + '/public'))
-
 // listen for requests
 app.listen(3007)
+
+app.use(express.static(__dirname + '/public'))
+app.use(morgan('dev'))
+
 
 app.get('/', (req, res) => {
   const blogs = [
