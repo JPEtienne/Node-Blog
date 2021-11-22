@@ -1,44 +1,41 @@
+const mongoose = require('mongoose')
 const express = require('express')
-const { join } = require('path')
+const morgan = require('morgan')
+const dotenv = require('dotenv')
+const path = require('path')
+const blogRoutes = require('./routes/blogRoutes')
 
 // express app
 const app = express()
 
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config()
+}
+
+// connect to mongodb
+const dbURI = `mongodb+srv://${process.env.USERNAME}:${process.env.PASSWORD}@node-blog.qektg.mongodb.net/node-blog?retryWrites=true&w=majority`
+mongoose
+  .connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(3007))
+  .catch((err) => console.error(err))
+
 // register view engine
 app.set('view engine', 'ejs')
 
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.urlencoded({ extended: true }))
 
-// listen for requests
-app.listen(3007)
+app.use(morgan('dev'))
 
 app.get('/', (req, res) => {
-  const blogs = [
-    {
-      title: 'Yoshi finds eggs',
-      snippet: 'Lorem ipsum dolor sit amet consectetur',
-    },
-    {
-      title: 'Yoshi finds eggs',
-      snippet: 'Lorem ipsum dolor sit amet consectetur',
-    },
-    {
-      title: 'Yoshi finds eggs',
-      snippet: 'Lorem ipsum dolor sit amet consectetur',
-    },
-  ]
-  res.render('index', { title: 'Home', blogs })
+  res.redirect('/blogs')
 })
 
 app.get('/about', (req, res) => {
   res.render('about', { title: 'About' })
 })
 
-app.get('/blogs/create', (req, res) => {
-  res.render('create', {
-    title: 'Create a new blog',
-  })
-})
+app.use('/blogs', blogRoutes)
 
 // redirect
 app.get('/about-us', (req, res) => {
